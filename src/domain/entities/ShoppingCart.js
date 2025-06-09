@@ -1,6 +1,5 @@
 class ShoppingCart {
-  constructor({ name, userID, items }) {
-    this.name = name;
+  constructor({ userID, items }) {
     this.userID = userID;
     this.items = items;
   }

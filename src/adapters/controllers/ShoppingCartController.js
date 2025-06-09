@@ -2,8 +2,9 @@ const CreateShoppingCart = require('../../application/useCases/CreateShoppingCar
 const ShoppingCartDTO = require('../../application/dtos/ShoppingCartDTO');
  
 class ShoppingCartController {
-  constructor(shoppingCart) {
-    this.createShoppingCart = new CreateShoppingCart(shoppingCart);
+  constructor(shoppingCartRepository) {
+    this.shoppingCartRepository = shoppingCartRepository;
+    this.createShoppingCart = new CreateShoppingCart(shoppingCartRepository);
   }
  
   async create(req, res) {
@@ -12,6 +13,15 @@ class ShoppingCartController {
       res.status(201).json(new ShoppingCartDTO(cart));
     } catch (error) {
       res.status(400).json({ message: error.message });
+    }
+  }
+
+  async getAll(req, res) {
+    try {
+      const carts = await this.shoppingCartRepository.getAll();
+      res.status(200).json(carts);
+    } catch (err) {
+      res.status(500).json({ message: 'Error retrieving shopping carts' });
     }
   }
 }

@@ -1,6 +1,11 @@
 const express = require('express');
 const config = require('./config')
-// const MongoProductRepository = require('./infrastructure/repositories/MongoProductRepository');
+
+const MongoProductRepository = require('./infraestructure/repositories/MongoProductRepository');
+const MongoCategoryRepository = require('./infraestructure/repositories/MongoCategoryRepository');
+const MongoShoppingCartRepository = require('./infraestructure/repositories/MongoShoppingCartRepository');
+const MySQLProductRepository = require('./infraestructure/repositories/MySQLProductRepository');
+
 const ProductController = require('./adapters/controllers/ProductController');
 const CategoryController = require('./adapters/controllers/CategoryController');
 const ShoppingCartController = require('./adapters/controllers/ShoppingCartController');
@@ -13,12 +18,21 @@ const app = express();
 const port = config.port;
 
 // Dependencies
-// const productRepository = new MongoProductRepository();
-// const productController = new ProductController(productRepository);
-// const categoryRepository = new MongoCategoryRepository();
-// const categoryController = new CategoryController(categoryRepository);
-// const shoppingCartRepository = new MongoShoppingCartRepository();
-// const shoppingCartController = new ShoppingCartController(shoppingCartRepository);
+const dbType = config.DB_TYPE;
+let productRepository;
+let categoryRepository;
+let shoppingCartRepository;
+if (dbType === 'mysql') {
+  productRepository = new MySQLProductRepository();
+} else {
+  productRepository = new MongoProductRepository();
+  categoryRepository = new MongoCategoryRepository();
+  shoppingCartRepository = new MongoShoppingCartRepository();
+}
+
+const productController = new ProductController(productRepository);
+const categoryController = new CategoryController(categoryRepository);
+const shoppingCartController = new ShoppingCartController(shoppingCartRepository);
 
 // Middlewares
 app.use(express.json());
