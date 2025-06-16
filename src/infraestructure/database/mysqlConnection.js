@@ -3,8 +3,8 @@ const mysql = require('mysql2/promise');
 const pool = mysql.createPool({
   host: 'localhost',
   port: 3306,
-  user: 'usuario',
-  password: 'contraseña',
+  user: 'root',
+  password: '',
   database: 'ecommerce',
   waitForConnections: true,
   charset: 'utf8mb4_general_ci',

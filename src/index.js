@@ -14,8 +14,22 @@ const categoryRoutes = require('./adapters/routes/categoryRoutes');
 const shoppingCartRoutes = require('./adapters/routes/shoppingCartRoutes');
 const { verifyToken } = require('./adapters/middlewares/authJwt');
 
+// const swaggerUI = require('swagger-ui-express');
+// const swaggerSpec = require('./infraestructure/docs/swaggerConfig');
+const MongoUserRepository = require('./infraestructure/repositories/MongoUserRepository');
+const PasswordHasher = require('./infraestructure/services/PasswordHasher');
+const TokenGenerator = require('./infraestructure/services/TokenGenerator');
+const SignIn = require('./application/useCases/SignIn');
+const authRoutes = require('./adapters/routes/authRoutes');
+const userRoutes = require('./adapters/routes/userRoutes');
+const SignUp = require('./application/useCases/SignUp');
+
 const app = express();
 const port = config.port;
+
+// Middlewares
+app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
 
 // Dependencies
 const dbType = config.DB_TYPE;
@@ -30,13 +44,20 @@ if (dbType === 'mysql') {
   shoppingCartRepository = new MongoShoppingCartRepository();
 }
 
+// —– SETUP AUTH —–
+const userRepo       = new MongoUserRepository();
+const passwordHasher = new PasswordHasher();
+const tokenGen       = new TokenGenerator();
+const signInUseCase  = new SignIn(userRepo, passwordHasher, tokenGen);
+app.use('/api/v1/auth', authRoutes(signInUseCase));
+ 
+// ——— SETUP SIGNUP ———
+const signUpUseCase = new SignUp(userRepo, passwordHasher);
+app.use('/api/v1/users',express.json(),userRoutes(signUpUseCase));
+
 const productController = new ProductController(productRepository);
 const categoryController = new CategoryController(categoryRepository);
 const shoppingCartController = new ShoppingCartController(shoppingCartRepository);
-
-// Middlewares
-app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
  
 // Routes
 app.use('/api/v1/products', verifyToken, productRoutes(productController));

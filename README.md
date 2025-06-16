@@ -33,6 +33,7 @@ Sigue estos pasos para configurar y ejecutar el proyecto en tu máquina local:
     PORT=5000
     MONGODB_URI=mongodb://localhost:27017/ecommerce
     JWT_SECRET=tu_clave_secreta
+    JWT_REFRESH_SECRET=your_jwt_refresh_secret
     DB_TYPE=mongodb
     ```
 
