@@ -14,8 +14,8 @@ const categoryRoutes = require('./adapters/routes/categoryRoutes');
 const shoppingCartRoutes = require('./adapters/routes/shoppingCartRoutes');
 const { verifyToken } = require('./adapters/middlewares/authJwt');
 
-// const swaggerUI = require('swagger-ui-express');
-// const swaggerSpec = require('./infraestructure/docs/swaggerConfig');
+const swaggerUI = require('swagger-ui-express');
+const swaggerSpec = require('./infraestructure/docs/swaggerConfig');
 const MongoUserRepository = require('./infraestructure/repositories/MongoUserRepository');
 const PasswordHasher = require('./infraestructure/services/PasswordHasher');
 const TokenGenerator = require('./infraestructure/services/TokenGenerator');
@@ -58,6 +58,9 @@ app.use('/api/v1/users',express.json(),userRoutes(signUpUseCase));
 const productController = new ProductController(productRepository);
 const categoryController = new CategoryController(categoryRepository);
 const shoppingCartController = new ShoppingCartController(shoppingCartRepository);
+
+// Configuración de Swagger UI
+app.use('/api-docs', swaggerUI.serve, swaggerUI.setup(swaggerSpec));
  
 // Routes
 app.use('/api/v1/products', verifyToken, productRoutes(productController));
